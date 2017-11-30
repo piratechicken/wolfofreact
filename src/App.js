@@ -7,6 +7,7 @@ import './App.css';
 class App extends Component {
   state = {
     error: null,
+    enteredSymbol: 'nflx',
     quote: null
   }
 
@@ -25,13 +26,27 @@ class App extends Component {
       })
   }
 
+  onChangeEnteredSymbol = (event) => {
+    const input = event.target
+    const value = input.value.trim().toUpperCase()
+    this.setState({ enteredSymbol: value })
+  }
+
   render() {
     // const quote = this.state.quote
-    const { error, quote } = this.state
+    const { error, enteredSymbol, quote } = this.state
 
     return (
       <div className="App">
         <h1>Wolf of React</h1>
+
+        <input 
+          value={ enteredSymbol } 
+          placeholder='Symbol e.g. nflx' 
+          aria-label='Symbol'
+          onChange={ this.onChangeEnteredSymbol }
+        />
+
         {
           !!error &&
             <div className="error">{ error.message }</div>
