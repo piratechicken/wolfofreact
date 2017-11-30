@@ -17,3 +17,10 @@ export function loadLogoForStock(symbol) {
       return res.data
     })
 }
+
+export function loadNewsForStock(symbol) {
+  return api.get(`stock/${symbol}/news/last/5`)
+    .then((res) => {
+      return res.data
+    })
+}

@@ -32,3 +32,7 @@ button:hover {
   33%  {background-color:blue; left:200px; top:200px;}
   66% {background-color:red; left:0px; top:0px;}
 }
+
+ul li {
+  font-size: 0.7rem;
+}

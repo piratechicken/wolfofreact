@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import StockInfo from './components/Stockinfo'
-import { loadQuoteForStock, loadLogoForStock } from './api/iex'
+import StockInfo from './components/StockInfo'
+import StockNews from './components/StockNews'
+import SearchHistory from './components/SearchHistory'
+import { loadQuoteForStock, loadLogoForStock, loadNewsForStock } from './api/iex'
 import './App.css';
 
 class App extends Component {
@@ -8,7 +10,9 @@ class App extends Component {
     error: null,
     enteredSymbol: 'nflx',
     quote: null,
-    logoURL: null
+    logoURL: null,
+    stockNews: null,
+    searchHistory: []
   }
 
   // The first time our component is rendered, this method is called
@@ -21,9 +25,16 @@ class App extends Component {
     loadQuoteForStock(enteredSymbol)
       .then((quote) => {//using .then because the request will take some time to fetch
         //from the api server
-        this.setState({
-          quote: quote,
-          error: null
+        this.setState((prevState) => {
+          const history = prevState.searchHistory
+          history.push(quote)
+          // const history = prevState.searchHistory
+          // const newHistory = history.concat(quote)
+          return {
+            quote: quote,
+            error: null,
+            searchHistory: history
+          }
         })
       })
       .catch((error) =>{
@@ -33,11 +44,14 @@ class App extends Component {
     loadLogoForStock(enteredSymbol)
       .then((logo) => {
         this.setState({ logoURL: logo.url })
-        console.log('logo:', logo.url)
       })
       .catch((error) => {
         console.error(`The logo for '${enteredSymbol}' is not available`, error)        
       })
+      loadNewsForStock(enteredSymbol)
+        .then((news) => {
+          this.setState({ stockNews: news })
+        })
   }
 
   onChangeEnteredSymbol = (event) => {
@@ -48,7 +62,7 @@ class App extends Component {
 
   render() {
     // const quote = this.state.quote
-    const { error, enteredSymbol, logoURL, quote } = this.state
+    const { error, enteredSymbol, logoURL, quote, stockNews, searchHistory } = this.state
 
     return (
       <div className="App">
@@ -56,12 +70,12 @@ class App extends Component {
         <img src={ logoURL } alt={ `logo for ${ enteredSymbol }` } />
         {
           !!error &&
-            <div className="error">{ error.message }</div>
+          <div className="error">{ error.message }</div>
         }
         {
           !!quote ? (
             <StockInfo 
-              { ...quote }
+            { ...quote }
             />
           ) : (
             <div className="loading">... loading ...</div>
@@ -78,6 +92,15 @@ class App extends Component {
         >
           Load quote
         </button>
+        { !!stockNews &&
+          <StockNews 
+            stockNews={ stockNews }
+            companyTitle={quote.companyName}
+          />
+        }
+        <SearchHistory 
+          searchHistory={searchHistory}
+        />
       </div>
     );
   }
