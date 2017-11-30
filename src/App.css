@@ -2,3 +2,29 @@
   max-width: 30rem;
   margin: auto;
 }
+
+.loading {
+  text-align: center;
+  color: dodgerblue;
+  border: soild black 1px;
+  width: 100px;
+  animation: spin 0.5s infinite linear;
+}
+
+@keyframes spin {
+    0%  {-webkit-transform: rotate(0deg);}
+    100% {-webkit-transform: rotate(360deg);}   
+}
+
+.error {
+  color: red;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%   {background-color:red; left:0px; top:0px;}
+  25%  {background-color:yellow; left:200px; top:0px;}
+  50%  {background-color:blue; left:200px; top:200px;}
+  75%  {background-color:green; left:0px; top:200px;}
+  100% {background-color:red; left:0px; top:0px;}
+}
