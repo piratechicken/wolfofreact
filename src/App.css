@@ -3,6 +3,11 @@
   margin: auto;
 }
 
+img {
+  display: block;
+  text-align: center;
+}
+
 .loading {
   text-align: center;
   color: dodgerblue;

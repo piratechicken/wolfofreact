@@ -1,28 +1,42 @@
 import React, { Component } from 'react';
 import StockInfo from './components/Stockinfo'
-import { loadQuoteForStock } from './api/iex'
+import { loadQuoteForStock, loadLogoForStock } from './api/iex'
 import './App.css';
-
 
 class App extends Component {
   state = {
     error: null,
     enteredSymbol: 'nflx',
-    quote: null
+    quote: null,
+    logoURL: null
   }
 
   // The first time our component is rendered, this method is called
   componentDidMount() {
-    loadQuoteForStock('nfx')
-      .then((data) => {
-        this.setState({ quote: data })
+    this.loadQuote()
+  }
+
+  loadQuote = () => {
+    const { enteredSymbol } = this.state
+    loadQuoteForStock(enteredSymbol)
+      .then((quote) => {//using .then because the request will take some time to fetch
+        //from the api server
+        this.setState({
+          quote: quote,
+          error: null
+        })
+      })
+      .catch((error) =>{
+        this.setState({error: error})
+        console.error(`The stock symbol '${enteredSymbol}' does not exist`, error)
+      })
+    loadLogoForStock(enteredSymbol)
+      .then((logo) => {
+        this.setState({ logoURL: logo.url })
+        console.log('logo:', logo.url)
       })
       .catch((error) => {
-        if (error.response.status === 404) {
-          error = new Error('The stock symbol does not exist')
-        }
-        console.error(error.message)
-        this.setState({ error: error })
+        console.error(`The logo for '${enteredSymbol}' is not available`, error)        
       })
   }
 
@@ -34,19 +48,12 @@ class App extends Component {
 
   render() {
     // const quote = this.state.quote
-    const { error, enteredSymbol, quote } = this.state
+    const { error, enteredSymbol, logoURL, quote } = this.state
 
     return (
       <div className="App">
         <h1>Wolf of React</h1>
-
-        <input 
-          value={ enteredSymbol } 
-          placeholder='Symbol e.g. nflx' 
-          aria-label='Symbol'
-          onChange={ this.onChangeEnteredSymbol }
-        />
-
+        <img src={ logoURL } alt={ `logo for ${ enteredSymbol }` } />
         {
           !!error &&
             <div className="error">{ error.message }</div>
@@ -60,6 +67,17 @@ class App extends Component {
             <div className="loading">... loading ...</div>
           )
         }
+        <input 
+          value={ enteredSymbol }
+          placeholder='Symbol e.g. nflx' 
+          aria-label='Symbol'
+          onChange={ this.onChangeEnteredSymbol }
+        />
+        <button
+          onClick={ this.loadQuote }
+        >
+          Load quote
+        </button>
       </div>
     );
   }
